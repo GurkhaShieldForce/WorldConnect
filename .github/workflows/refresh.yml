@@ -1,0 +1,60 @@
+# Nightly data refresh.
+#
+# Runs fetch/fetch.py, which rewrites data/metrics.json from public sources, and
+# commits the result if anything changed. GitHub Pages redeploys automatically
+# from the main branch, so the site shows the new numbers within minutes.
+#
+# Security notes:
+#   - permissions is the minimum: write to this repo's contents, nothing else.
+#   - Every action is pinned to a full commit SHA (the tag is only a comment),
+#     so a hijacked or retagged action cannot run different code here.
+#   - No secrets are used. The fetcher only reads keyless public CSVs.
+
+name: Refresh live metrics
+
+on:
+  schedule:
+    - cron: "17 6 * * *"        # 06:17 UTC daily (~02:17 New York). Off the hour to avoid the :00 rush.
+  workflow_dispatch:            # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Validate the graph before touching data
+        run: |
+          pip install --require-hashes -r requirements.txt
+          python tools/validate.py
+
+      - name: Fetch live metrics
+        run: python fetch/fetch.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "worldconnect-bot"
+          git config user.email "worldconnect-bot@users.noreply.github.com"
+          if git diff --quiet -- data/metrics.json; then
+            echo "No change in metrics."
+          else
+            git add data/metrics.json
+            git commit -m "data: nightly metrics refresh $(date -u +%F)"
+            git push
+          fi

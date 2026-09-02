@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GurkhaShieldForce/WorldConnect/schema/world.schema.json",
+  "title": "WorldConnect graph",
+  "description": "The whole graph in one file: layers, nodes, edges, sources, traces. Live metric values live in data/metrics.json and are written by the fetcher, never by hand.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "layers", "nodes", "edges", "sources", "traces"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "order", "units"],
+        "properties": {
+          "id":    { "$ref": "#/$defs/slug" },
+          "label": { "type": "string", "minLength": 1 },
+          "order": { "type": "integer", "minimum": 1, "description": "Vertical position in the layer stack, 1 = innermost (Biology)." },
+          "units": { "type": "array", "items": { "type": "string" }, "description": "Native units of measure for this layer." }
+        }
+      }
+    },
+
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "layer", "label", "summary"],
+        "properties": {
+          "id":      { "$ref": "#/$defs/slug" },
+          "layer":   { "$ref": "#/$defs/slug", "description": "Must match a layer id. A node lives in exactly one layer." },
+          "label":   { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "metrics": {
+            "type": "array",
+            "description": "Declares which live series this node has. Values arrive in data/metrics.json keyed by metric id.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "label", "unit", "source", "cadence", "scope"],
+              "properties": {
+                "id":      { "$ref": "#/$defs/slug" },
+                "label":   { "type": "string" },
+                "unit":    { "type": "string" },
+                "source":  { "$ref": "#/$defs/slug", "description": "Must match a source id." },
+                "cadence": { "enum": ["daily", "weekly", "monthly", "quarterly", "annual"] },
+                "scope":   { "$ref": "#/$defs/scope" },
+                "fetch": {
+                  "type": "object",
+                  "description": "How the nightly job refreshes this series. Omit for series that are not auto-refreshed.",
+                  "additionalProperties": false,
+                  "required": ["kind"],
+                  "properties": {
+                    "kind":   { "enum": ["fred-csv", "owid-csv"] },
+                    "series": { "type": "string", "pattern": "^[A-Z0-9]+$", "description": "fred-csv: the FRED series id." },
+                    "slug":   { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "owid-csv: the grapher slug." },
+                    "entity": { "type": "string", "pattern": "^[A-Z_]+$", "description": "owid-csv: the entity code, e.g. USA or OWID_WRL." },
+                    "column": { "type": "string", "pattern": "^[a-z0-9_]+$", "description": "owid-csv: the value column (short name)." }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "from", "to", "quantity", "unit", "confidence", "scope", "source", "why"],
+        "properties": {
+          "id":         { "$ref": "#/$defs/slug" },
+          "from":       { "$ref": "#/$defs/slug" },
+          "to":         { "$ref": "#/$defs/slug" },
+          "quantity":   { "type": "number" },
+          "range":      { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Optional [low, high] when the number is contested." },
+          "unit":       { "type": "string", "minLength": 1 },
+          "confidence": { "enum": ["high", "medium", "low"], "description": "high = measured by a primary source; medium = derived from primary data; low = estimate, reasoning required in why." },
+          "scope":      { "$ref": "#/$defs/scope" },
+          "source":     { "$ref": "#/$defs/slug" },
+          "why":        { "type": "string", "minLength": 20, "maxLength": 400, "description": "The mechanism. One or two sentences. Required: a number without a mechanism is trivia." }
+        }
+      }
+    },
+
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "publisher", "url", "license", "fetch"],
+        "properties": {
+          "id":        { "$ref": "#/$defs/slug" },
+          "publisher": { "type": "string", "minLength": 1 },
+          "title":     { "type": "string" },
+          "url":       { "type": "string", "pattern": "^https://" },
+          "license":   { "enum": ["public-domain", "cc-by", "cc-by-sa", "open-other", "terms-of-use", "estimate"] },
+          "fetch":     { "enum": ["api", "csv", "manual", "none"], "description": "api/csv = the nightly job can refresh it; manual = a human copied a number; none = estimate with reasoning." },
+          "accessed":  { "type": "string", "format": "date" },
+          "note":      { "type": "string" }
+        }
+      }
+    },
+
+    "traces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "action", "path"],
+        "properties": {
+          "id":     { "$ref": "#/$defs/slug" },
+          "label":  { "type": "string" },
+          "action": { "type": "string", "description": "The human action in one sentence, e.g. 'You eat a sandwich.'" },
+          "path":   { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/slug" }, "description": "Ordered edge ids. The first edge starts at 'you'; every later edge must start from a node already reached by the trace, so the trace is a tree that grows outward, not necessarily a single line." }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "slug":  { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "minLength": 2, "maxLength": 60 },
+    "scope": { "enum": ["us", "global"] }
+  }
+}
