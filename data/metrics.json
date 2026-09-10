@@ -3,10 +3,10 @@
   {
    "error": "ValueError: parsed zero observations",
    "metric": "grid-carbon-intensity-world",
-   "on": "2026-09-09"
+   "on": "2026-09-10"
   }
  ],
- "generated": "2026-09-09",
+ "generated": "2026-09-10",
  "metrics": {
   "diesel-price-us": {
    "cadence": "weekly",
@@ -14,10 +14,6 @@
    "node": "diesel-fuel",
    "scope": "us",
    "series": [
-    [
-     "2025-07-14",
-     3.758
-    ],
     [
      "2025-07-21",
      3.812
@@ -253,11 +249,15 @@
     [
      "2026-08-31",
      5.599
+    ],
+    [
+     "2026-09-07",
+     5.967
     ]
    ],
    "source": "fred-gasdesw",
    "unit": "USD/gal",
-   "updated": "2026-09-09"
+   "updated": "2026-09-10"
   },
   "electricity-price-us": {
    "cadence": "monthly",
@@ -508,7 +508,7 @@
    ],
    "source": "fred-apu000072610",
    "unit": "USD/kWh",
-   "updated": "2026-09-09"
+   "updated": "2026-09-10"
   },
   "food-at-home-cpi": {
    "cadence": "monthly",
@@ -759,7 +759,7 @@
    ],
    "source": "fred-cusr0000saf11",
    "unit": "index",
-   "updated": "2026-09-09"
+   "updated": "2026-09-10"
   },
   "grid-carbon-intensity-us": {
    "cadence": "annual",
@@ -774,7 +774,7 @@
    ],
    "source": "owid-carbon-intensity",
    "unit": "gCO2/kWh",
-   "updated": "2026-09-09"
+   "updated": "2026-09-10"
   },
   "henry-hub-price": {
    "cadence": "monthly",
@@ -1025,7 +1025,7 @@
    ],
    "source": "fred-mhhngsp",
    "unit": "USD/MMBtu",
-   "updated": "2026-09-09"
+   "updated": "2026-09-10"
   },
   "wheat-price-usd-t": {
    "cadence": "monthly",
@@ -1276,7 +1276,7 @@
    ],
    "source": "fred-pwheamtusdm",
    "unit": "USD/t",
-   "updated": "2026-09-09"
+   "updated": "2026-09-10"
   }
  }
 }
