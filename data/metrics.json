@@ -3,10 +3,10 @@
   {
    "error": "ValueError: parsed zero observations",
    "metric": "grid-carbon-intensity-world",
-   "on": "2026-11-09"
+   "on": "2026-11-10"
   }
  ],
- "generated": "2026-11-09",
+ "generated": "2026-11-10",
  "metrics": {
   "diesel-price-us": {
    "cadence": "weekly",
@@ -257,7 +257,7 @@
    ],
    "source": "fred-gasdesw",
    "unit": "USD/gal",
-   "updated": "2026-11-09"
+   "updated": "2026-11-10"
   },
   "electricity-price-us": {
    "cadence": "monthly",
@@ -265,10 +265,6 @@
    "node": "grid-generation",
    "scope": "us",
    "series": [
-    [
-     "2021-09-01",
-     0.144
-    ],
     [
      "2021-10-01",
      0.142
@@ -504,11 +500,15 @@
     [
      "2026-09-01",
      0.196
+    ],
+    [
+     "2026-10-01",
+     0.19
     ]
    ],
    "source": "fred-apu000072610",
    "unit": "USD/kWh",
-   "updated": "2026-11-09"
+   "updated": "2026-11-10"
   },
   "food-at-home-cpi": {
    "cadence": "monthly",
@@ -516,10 +516,6 @@
    "node": "food-cpi",
    "scope": "us",
    "series": [
-    [
-     "2021-09-01",
-     262.459
-    ],
     [
      "2021-10-01",
      265.084
@@ -755,11 +751,15 @@
     [
      "2026-09-01",
      321.111
+    ],
+    [
+     "2026-10-01",
+     322.535
     ]
    ],
    "source": "fred-cusr0000saf11",
    "unit": "index",
-   "updated": "2026-11-09"
+   "updated": "2026-11-10"
   },
   "grid-carbon-intensity-us": {
    "cadence": "annual",
@@ -774,7 +774,7 @@
    ],
    "source": "owid-carbon-intensity",
    "unit": "gCO2/kWh",
-   "updated": "2026-11-09"
+   "updated": "2026-11-10"
   },
   "henry-hub-price": {
    "cadence": "monthly",
@@ -1025,7 +1025,7 @@
    ],
    "source": "fred-mhhngsp",
    "unit": "USD/MMBtu",
-   "updated": "2026-11-09"
+   "updated": "2026-11-10"
   },
   "wheat-price-usd-t": {
    "cadence": "monthly",
@@ -1276,7 +1276,7 @@
    ],
    "source": "fred-pwheamtusdm",
    "unit": "USD/t",
-   "updated": "2026-11-09"
+   "updated": "2026-11-10"
   }
  }
 }
